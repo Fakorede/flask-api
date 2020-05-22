@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from models.store import StoreModel
 
 
@@ -11,7 +11,7 @@ class Store(Resource):
             return store.json()
         return {"message": "Store not found"}, 404
 
-    @jwt_required()
+    @jwt_required
     def post(self, name):
         if StoreModel.find_by_name(name):
             return {"message": f"An store with name '{name}' already exists."}, 400
@@ -25,7 +25,7 @@ class Store(Resource):
 
         return store.json(), 201
 
-    @jwt_required()
+    @jwt_required
     def delete(self, name):
         store = StoreModel.find_by_name(name)
         if store:
@@ -36,4 +36,4 @@ class Store(Resource):
 
 class StoreList(Resource):
     def get(self):
-        return {"store": [store.json() for store in StoreModel.query.all()]}
+        return {"store": [store.json() for store in StoreModel.find_all()]}
