@@ -3,12 +3,13 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
+# from db import db
+from blacklist import BLACKLIST
 from resources.user import (
     UserRegister, User, UserLogin, UserLogout, TokenRefresh
 )
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
-from blacklist import BLACKLIST
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -21,9 +22,9 @@ app.config['JWT_SECRET_KEY'] = 'xxxxx'
 api = Api(app)
 
 
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 
 jwt = JWTManager(app)
