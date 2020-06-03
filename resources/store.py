@@ -9,14 +9,16 @@ ERROR_INSERTING = "An error ocurred while inserting the store."
 
 
 class Store(Resource):
-    def get(self, name: str):
+    @classmethod
+    def get(cls, name: str):
         store = StoreModel.find_by_name(name)
         if store:
             return store.json()
         return {"message": STORE_NOT_FOUND}, 404
 
+    @classmethod
     @jwt_required
-    def post(self, name: str):
+    def post(cls, name: str):
         if StoreModel.find_by_name(name):
             return {"message": STORE_EXISTS.format(name)}, 400
 
@@ -29,8 +31,9 @@ class Store(Resource):
 
         return store.json(), 201
 
+    @classmethod
     @jwt_required
-    def delete(self, name: str):
+    def delete(cls, name: str):
         store = StoreModel.find_by_name(name)
         if not store:
             return{"message": STORE_NOT_FOUND}, 404
@@ -39,5 +42,6 @@ class Store(Resource):
 
 
 class StoreList(Resource):
-    def get(self):
+    @classmethod
+    def get(cls):
         return {"store": [store.json() for store in StoreModel.find_all()]}

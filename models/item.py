@@ -27,6 +27,14 @@ class ItemModel(db.Model):
             "store_id": self.store_id,
         }
 
+    def save_to_db(self) -> None:
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
+
     @classmethod
     def find_by_name(cls, name: str) -> "ItemModel":
         # SELECT * FROM items WHERE name=name LIMIT 1
@@ -36,10 +44,3 @@ class ItemModel(db.Model):
     def find_all(cls) -> List["ItemModel"]:
         return cls.query.all()
 
-    def save_to_db(self) -> None:
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self) -> None:
-        db.session.delete(self)
-        db.session.commit()

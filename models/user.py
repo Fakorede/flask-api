@@ -18,6 +18,14 @@ class UserModel(db.Model):
     def json(self) -> UserJSON:
         return {"id": self.id, "username": self.username}
 
+    def save_to_db(self) -> None:
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
+
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
         # SELECT * FROM users WHERE username=username LIMIT 1
@@ -27,11 +35,3 @@ class UserModel(db.Model):
     def find_by_id(cls, _id: int) -> "UserModel":
         # SELECT * FROM users WHERE id=_id LIMIT 1
         return cls.query.filter_by(id=_id).first()
-
-    def save_to_db(self) -> None:
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self) -> None:
-        db.session.delete(self)
-        db.session.commit()
