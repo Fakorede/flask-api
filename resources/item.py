@@ -4,23 +4,19 @@ from flask_jwt_extended import (
     jwt_required,
     jwt_optional,
     get_jwt_claims,
-    get_jwt_identity
+    get_jwt_identity,
 )
 from models.item import ItemModel
 
 
 class Item(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('price',
-                        type=float,
-                        required=True,
-                        help="This field cannot be left blank"
-                        )
-    parser.add_argument('store_id',
-                        type=int,
-                        required=True,
-                        help="A store id is required"
-                        )
+    parser.add_argument(
+        "price", type=float, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
+        "store_id", type=int, required=True, help="A store id is required"
+    )
 
     @jwt_required
     def get(self, name):
@@ -48,7 +44,7 @@ class Item(Resource):
     @jwt_required
     def put(self, name):
         claims = get_jwt_claims()
-        if not claims['is_admin']:
+        if not claims["is_admin"]:
             return {"message": "Admin privilege required"}, 401
 
         data = Item.parser.parse_args()
@@ -58,7 +54,7 @@ class Item(Resource):
         if item is None:
             item = ItemModel(name, **data)
         else:
-            item.price = data['price']
+            item.price = data["price"]
 
         item.save_to_db()
 
@@ -67,7 +63,7 @@ class Item(Resource):
     @jwt_required
     def delete(self, name):
         claims = get_jwt_claims()
-        if not claims['is_admin']:
+        if not claims["is_admin"]:
             return {"message": "Admin privilege required"}, 401
 
         item = ItemModel.find_by_name(name)
@@ -83,7 +79,10 @@ class ItemList(Resource):
         items = [item.json() for item in ItemModel.find_all()]
         if user_id:
             return {"items": items}, 200
-        return {
-            "items": [item['name'] for item in items],
-            "message": "Login to learn more about these items"
-        }, 200
+        return (
+            {
+                "items": [item["name"] for item in items],
+                "message": "Login to learn more about these items",
+            },
+            200,
+        )

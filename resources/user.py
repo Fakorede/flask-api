@@ -5,24 +5,26 @@ from flask_jwt_extended import (
     jwt_required,
     jwt_refresh_token_required,
     get_jwt_identity,
-    get_raw_jwt
+    get_raw_jwt,
 )
 from werkzeug.security import safe_str_cmp
 from models.user import UserModel
 from blacklist import BLACKLIST
 
 _user_parser = reqparse.RequestParser()
-_user_parser.add_argument('username', type=str, required=True,
-                          help="Please enter a username")
-_user_parser.add_argument('password', type=str, required=True,
-                          help="Please enter a password")
+_user_parser.add_argument(
+    "username", type=str, required=True, help="Please enter a username"
+)
+_user_parser.add_argument(
+    "password", type=str, required=True, help="Please enter a password"
+)
 
 
 class UserRegister(Resource):
     def post(self):
         data = _user_parser.parse_args()
 
-        if UserModel.find_by_username(data['username']):
+        if UserModel.find_by_username(data["username"]):
             return {"message": "User already exists!"}, 400
 
         user = UserModel(**data)
@@ -32,7 +34,6 @@ class UserRegister(Resource):
 
 
 class User(Resource):
-
     @classmethod
     @jwt_required
     def get(cls, user_id):
@@ -52,19 +53,15 @@ class User(Resource):
 
 
 class UserLogin(Resource):
-
     @classmethod
     def post(cls):
         data = _user_parser.parse_args()
 
-        user = UserModel.find_by_username(data['username'])
-        if user and safe_str_cmp(user.password, data['password']):
+        user = UserModel.find_by_username(data["username"])
+        if user and safe_str_cmp(user.password, data["password"]):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
-            return {
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }, 200
+            return {"access_token": access_token, "refresh_token": refresh_token}, 200
 
         return {"message": "Invalid credentials"}, 401
 
@@ -72,7 +69,7 @@ class UserLogin(Resource):
 class UserLogout(Resource):
     @jwt_required
     def post(self):
-        jti = get_raw_jwt()['jti']  # jti (JWT ID) is a unique id for a JWT
+        jti = get_raw_jwt()["jti"]  # jti (JWT ID) is a unique id for a JWT
         BLACKLIST.add(jti)
         return {"message": "Successfully logged out"}, 200
 
