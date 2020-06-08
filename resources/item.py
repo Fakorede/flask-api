@@ -42,10 +42,7 @@ class Item(Resource):
         item_json = request.get_json() # price, store_id
         item_json["name"] = name
 
-        try:
-            item = item_schema.load(item_json)
-        except ValidationError as err:
-            return err.messages, 400
+        item = item_schema.load(item_json)
 
         try:
             item.save_to_db()
@@ -68,11 +65,7 @@ class Item(Resource):
             item.price = item_json["price"]
         else:
             item_json["name"] = name
-
-            try:
-                item = item_schema.load(item_json)
-            except ValidationError as err:
-                return err.messages, 400
+            item = item_schema.load(item_json)
 
         item.save_to_db()
 
@@ -86,10 +79,10 @@ class Item(Resource):
             return {"message": ADMIN_PRIVILEGE}, 401
 
         item = ItemModel.find_by_name(name)
-        if not item:
-            return {"message": ITEM_NOT_FOUND}, 404
-        item.delete_from_db()
-        return {"message": ITEM_DELETED}, 200
+        if item:
+            item.delete_from_db()
+            return {"message": ITEM_DELETED}, 200
+        return {"message": ITEM_NOT_FOUND}, 404
 
 
 class ItemList(Resource):
