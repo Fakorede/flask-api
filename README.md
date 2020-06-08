@@ -8,4 +8,17 @@ A restful api built on Python and Flask framework
 - Flask-JWT
 - Flask-RESTful
 - Flask-SQLAlchemy
+- Flask-Marshmallow
 - Flask-JWT-Extended
+
+### Install Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+### Run App
+
+```
+python app.py
+```
